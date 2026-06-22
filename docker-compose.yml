@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:15-alpine
+    container_name: hospital_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: app_hospital_user
+      POSTGRES_PASSWORD: seguridad_encriptada_2026
+      POSTGRES_DB: hospital_incidentes_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/database:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    networks:
+      - hospital_internal_network
+
+  fastapi_backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hospital_fastapi
+    restart: always
+    volumes:
+      - ./backend/media:/var/media/audios
+    environment:
+      - POSTGRES_SERVER=postgres_db
+      - POSTGRES_USER=app_hospital_user
+      - POSTGRES_PASSWORD=seguridad_encriptada_2026
+      - POSTGRES_DB=hospital_incidentes_db
+      - POSTGRES_PORT=5432
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres_db
+    networks:
+      - hospital_internal_network
+
+volumes:
+  postgres_data:
+
+networks:
+  hospital_internal_network:
+    driver: bridge

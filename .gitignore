@@ -1,0 +1,9 @@
+# Notas de voz / Voice notes
+backend/storage/audios/*
+!backend/storage/audios/.gitkeep
+*.ogg
+*.weba
+*.wav
+*.mp3
+.env
+.env.*
