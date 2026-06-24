@@ -20,7 +20,7 @@ export const useWebSocket = (onMessageCallback?: (data: any) => void) => {
       wsRef.current.close();
     }
     
-    const wsUrl = `ws://localhost:8000/api/v1/auth/ws/status?token=${token}`;
+    const wsUrl = `ws://${window.location.hostname}:8000/api/v1/auth/ws/status?token=${token}`;
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
     

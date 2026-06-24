@@ -3,6 +3,7 @@ import { api } from '../services/api';
 import { Dispositivo, AreaHospital, Traslado, AuditoriaLog } from '../types';
 import { useNotificationModal } from '../context/NotificationModalContext';
 import { SearchSelectModal } from './SearchSelectModal';
+import { Plug, RefreshCw, AlertTriangle, Search } from 'lucide-react';
 
 export const Traslados: React.FC = () => {
   const { showAlert, showConfirm } = useNotificationModal();
@@ -253,8 +254,9 @@ export const Traslados: React.FC = () => {
                   className="btn btn-secondary" 
                   onClick={handlePingCheck} 
                   disabled={pingLoading || !selectedDevice.ip_fija}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
                 >
-                  {pingLoading ? 'Comprobando...' : '🔌 Test Red Actual'}
+                  {pingLoading ? 'Comprobando...' : <><Plug size={14} /> Test Red Actual</>}
                 </button>
               </div>
 
@@ -278,7 +280,7 @@ export const Traslados: React.FC = () => {
                 
                 {/* Formulario Traslado */}
                 <form onSubmit={handleRelocateSubmit} className="card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px', background: 'rgba(255,255,255,0.01)' }}>
-                  <h4 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--primary)' }}>🔄 Reubicar Activo</h4>
+                  <h4 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '6px' }}><RefreshCw size={14} /> Reubicar Activo</h4>
                   
                   <div className="form-group" style={{ margin: 0 }}>
                     <label className="form-label">Área Destino</label>
@@ -294,7 +296,7 @@ export const Traslados: React.FC = () => {
                             return a ? a.nombre : '-- Seleccione --';
                           })()
                         : '-- Seleccione --'}
-                      <span>🔍</span>
+                      <span><Search size={14} /></span>
                     </button>
                   </div>
 
@@ -316,7 +318,7 @@ export const Traslados: React.FC = () => {
 
                 {/* Formulario Desincorporación */}
                 <form onSubmit={handleRetireSubmit} className="card" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px', background: 'rgba(255,255,255,0.01)' }}>
-                  <h4 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--danger)' }}>⚠️ Desincorporación (Baja)</h4>
+                  <h4 style={{ fontSize: '13px', fontWeight: '700', color: 'var(--danger)', display: 'flex', alignItems: 'center', gap: '6px' }}><AlertTriangle size={14} /> Desincorporación (Baja)</h4>
                   
                   <div className="form-group" style={{ margin: 0 }}>
                     <label className="form-label">Justificación de la Baja</label>

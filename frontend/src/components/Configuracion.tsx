@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api, ApiError } from '../services/api';
 import { ConfiguracionSistema, AlertaSistema, AreaHospital } from '../types';
 import { useNotificationModal } from '../context/NotificationModalContext';
+import { Save, Check, BarChart2, File } from 'lucide-react';
 
 export const Configuracion: React.FC = () => {
   const { showAlert } = useNotificationModal();
@@ -95,7 +96,7 @@ export const Configuracion: React.FC = () => {
   // Rutas de descargas streaming directas con token
   const getDownloadUrl = (format: 'excel' | 'pdf') => {
     const token = localStorage.getItem('token');
-    let url = `http://localhost:8000/api/v1/reports/export/${format}?token=${token}`;
+    let url = `http://${window.location.hostname}:8000/api/v1/reports/export/${format}?token=${token}`;
     if (areaOrigenId) url += `&area_origen_id=${areaOrigenId}`;
     if (areaDestinoId) url += `&area_destino_id=${areaDestinoId}`;
     if (fechaInicio) url += `&fecha_inicio=${fechaInicio}`;
@@ -183,8 +184,8 @@ export const Configuracion: React.FC = () => {
               <input type="number" className="form-input" value={retentionAuditoria} onChange={(e) => setRetentionAuditoria(Number(e.target.value))} />
             </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px' }}>
-              💾 Guardar Configuración del Servidor
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <Save size={16} /> Guardar Configuración del Servidor
             </button>
           </form>
         </div>
@@ -227,9 +228,9 @@ export const Configuracion: React.FC = () => {
                       <button 
                         className="btn btn-secondary" 
                         onClick={() => handleArchiveAlert(a.id)}
-                        style={{ padding: '4px 8px', fontSize: '11px' }}
+                        style={{ padding: '4px 8px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}
                       >
-                        ✔ Archivar
+                        <Check size={12} /> Archivar
                       </button>
                     </div>
                   </div>
@@ -281,7 +282,7 @@ export const Configuracion: React.FC = () => {
                 target="_blank" 
                 rel="noreferrer"
               >
-                📊 Exportar Excel
+                <BarChart2 size={16} /> Exportar Excel
               </a>
               
               <a 
@@ -291,7 +292,7 @@ export const Configuracion: React.FC = () => {
                 target="_blank" 
                 rel="noreferrer"
               >
-                📄 Exportar PDF
+                <File size={16} /> Exportar PDF
               </a>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { Hospital, Key, Shield, Wrench, Laptop, Sparkles } from 'lucide-react';
 
 export const Login: React.FC = () => {
   const { loginSSO, loginBypass, error } = useAuth();
@@ -34,8 +35,8 @@ export const Login: React.FC = () => {
     <div className="lock-screen" style={{ padding: '16px' }}>
       <div className="card lock-card card-primary-glow" style={{ width: '100%', maxWidth: '440px', padding: 'var(--card-padding, 32px)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px' }}>
-          <h1 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '0.05em', textAlign: 'center' }}>
-            🏥 INFO-SOPORTE
+          <h1 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '0.05em', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+            <Hospital size={28} /> INFO-SOPORTE
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '13px', textAlign: 'center', lineHeight: '1.5' }}>
             Sistema Unificado de Incidencias, Control de Almacén y Control Patrimonial Hospitalario
@@ -98,36 +99,36 @@ export const Login: React.FC = () => {
             className="btn btn-secondary"
             onClick={() => handleBypass('admin.soporte@hospital.local')}
             disabled={loading}
-            style={{ padding: '10px 8px', fontSize: '12px', display: 'flex', justifyContent: 'flex-start' }}
+            style={{ padding: '10px 8px', fontSize: '12px', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '6px' }}
           >
-            🔑 Admin General
+            <Key size={16} /> Admin General
           </button>
           <button
             id="bypass-soporte"
             className="btn btn-secondary"
             onClick={() => handleBypass('freddy.perez@hospital.local')}
             disabled={loading}
-            style={{ padding: '10px 8px', fontSize: '12px', display: 'flex', justifyContent: 'flex-start' }}
+            style={{ padding: '10px 8px', fontSize: '12px', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '6px' }}
           >
-            🛡️ Soporte Técnico
+            <Shield size={16} /> Soporte Técnico
           </button>
           <button
             id="bypass-hw"
             className="btn btn-secondary"
             onClick={() => handleBypass('maria.gomez@hospital.local')}
             disabled={loading}
-            style={{ padding: '10px 8px', fontSize: '12px', display: 'flex', justifyContent: 'flex-start' }}
+            style={{ padding: '10px 8px', fontSize: '12px', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '6px' }}
           >
-            🔧 Técnico Hardware
+            <Wrench size={16} /> Técnico Hardware
           </button>
           <button
             id="bypass-sw"
             className="btn btn-secondary"
             onClick={() => handleBypass('juan.rodriguez@hospital.local')}
             disabled={loading}
-            style={{ padding: '10px 8px', fontSize: '12px', display: 'flex', justifyContent: 'flex-start' }}
+            style={{ padding: '10px 8px', fontSize: '12px', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '6px' }}
           >
-            💻 Técnico Software
+            <Laptop size={16} /> Técnico Software
           </button>
         </div>
 
@@ -135,11 +136,11 @@ export const Login: React.FC = () => {
           <button
             id="bypass-new-user"
             className="btn btn-secondary"
-            style={{ width: '100%', background: 'rgba(255, 255, 255, 0.02)', padding: '10px', fontSize: '12px', fontWeight: '500' }}
+            style={{ width: '100%', background: 'rgba(255, 255, 255, 0.02)', padding: '10px', fontSize: '12px', fontWeight: '500', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
             onClick={() => handleBypass(`nuevo.aspirante.${Date.now()}@hospital.local`)}
             disabled={loading}
           >
-            ✨ Simular Registro de Nuevo Aspirante
+            <Sparkles size={16} /> Simular Registro de Nuevo Aspirante
           </button>
         </div>
       </div>

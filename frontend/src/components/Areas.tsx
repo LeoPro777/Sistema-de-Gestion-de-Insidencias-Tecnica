@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { AreaHospital } from '../types';
 import { useNotificationModal } from '../context/NotificationModalContext';
+import { Pencil, Save, Plus } from 'lucide-react';
 
 export const Areas: React.FC = () => {
   const { showAlert } = useNotificationModal();
@@ -129,9 +130,9 @@ export const Areas: React.FC = () => {
                         <button
                           className="btn btn-secondary"
                           onClick={() => handleEditClick(area)}
-                          style={{ padding: '6px 12px', fontSize: '12px' }}
+                          style={{ padding: '6px 12px', fontSize: '12px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                         >
-                          ✏️ Editar
+                          <Pencil size={12} /> Editar
                         </button>
                       </td>
                     </tr>
@@ -191,10 +192,10 @@ export const Areas: React.FC = () => {
               <button
                 type="submit"
                 className="btn btn-primary"
-                style={{ flex: editingArea ? 1.5 : 1 }}
+                style={{ flex: editingArea ? 1.5 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                 disabled={submitting}
               >
-                {editingArea ? '💾 Guardar Cambios' : '➕ Registrar Área'}
+                {editingArea ? <><Save size={16} /> Guardar Cambios</> : <><Plus size={16} /> Registrar Área</>}
               </button>
               {editingArea && (
                 <button

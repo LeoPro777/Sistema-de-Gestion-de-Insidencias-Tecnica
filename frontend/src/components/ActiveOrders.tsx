@@ -3,6 +3,7 @@ import { api, ApiError } from '../services/api';
 import { Orden, InventarioItem } from '../types';
 import { useNotificationModal } from '../context/NotificationModalContext';
 import { SearchSelectModal } from './SearchSelectModal';
+import { RefreshCw, Pin, Zap, CheckCircle, XCircle, Wrench, CornerUpLeft, Flag, FileEdit, X, AlertTriangle, Save, Plus, Search, Trash2, Check } from 'lucide-react';
 
 export const ActiveOrders: React.FC = () => {
   const { showAlert, showConfirm } = useNotificationModal();
@@ -179,7 +180,7 @@ export const ActiveOrders: React.FC = () => {
             Despacho de incidencias asignadas. El parpadeo de tarjetas indica tickets excedidos en su tiempo operativo (Aging).
           </p>
         </div>
-        <button className="btn btn-secondary" onClick={fetchData}>🔄 Refrescar Tablero</button>
+        <button className="btn btn-secondary" onClick={fetchData} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><RefreshCw size={14} /> Refrescar Tablero</button>
       </div>
 
       {/* Selector de pestañas móvil para el Kanban */}
@@ -196,7 +197,7 @@ export const ActiveOrders: React.FC = () => {
             whiteSpace: 'nowrap'
           }}
         >
-          📌 Asignadas ({getColOrders('ASIGNADA').length})
+          <Pin size={12} /> Asignadas ({getColOrders('ASIGNADA').length})
         </button>
         <button 
           className="btn" 
@@ -210,7 +211,7 @@ export const ActiveOrders: React.FC = () => {
             whiteSpace: 'nowrap'
           }}
         >
-          ⚡ En Proceso ({getColOrders('EN_PROCESO').length})
+          <Zap size={12} /> En Proceso ({getColOrders('EN_PROCESO').length})
         </button>
         <button 
           className="btn" 
@@ -224,7 +225,7 @@ export const ActiveOrders: React.FC = () => {
             whiteSpace: 'nowrap'
           }}
         >
-          ✅ Cerradas ({getColOrders('RESUELTA').length})
+          <CheckCircle size={12} /> Cerradas ({getColOrders('RESUELTA').length})
         </button>
         <button 
           className="btn" 
@@ -238,7 +239,7 @@ export const ActiveOrders: React.FC = () => {
             whiteSpace: 'nowrap'
           }}
         >
-          ❌ Rechazadas ({getColOrders('RECHAZADA').length})
+          <XCircle size={12} /> Rechazadas ({getColOrders('RECHAZADA').length})
         </button>
       </div>
 
@@ -248,7 +249,7 @@ export const ActiveOrders: React.FC = () => {
         {/* COLUMNA: ASIGNADA */}
         <div className={`card kanban-col ${activeColTab === 'ASIGNADA' ? 'active' : ''}`} style={{ background: 'rgba(255,255,255,0.01)', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: '700' }}>📌 Asignadas</h4>
+            <h4 style={{ fontSize: '14px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}><Pin size={14} /> Asignadas</h4>
             <span style={{ background: 'rgba(255,255,255,0.08)', padding: '2px 8px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700' }}>
               {getColOrders('ASIGNADA').length}
             </span>
@@ -280,11 +281,11 @@ export const ActiveOrders: React.FC = () => {
                   </p>
 
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button className="btn btn-primary" onClick={() => handleUpdateStatus(o.id, 'EN_PROCESO')} style={{ flex: 1, padding: '6px 10px', fontSize: '12px' }}>
-                      🔧 Iniciar
+                    <button className="btn btn-primary" onClick={() => handleUpdateStatus(o.id, 'EN_PROCESO')} style={{ flex: 1, padding: '6px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <Wrench size={12} /> Iniciar
                     </button>
-                    <button className="btn btn-secondary" onClick={() => handleRevert(o.id)} style={{ padding: '6px 10px', fontSize: '12px' }}>
-                      ↩️ Devolver
+                    <button className="btn btn-secondary" onClick={() => handleRevert(o.id)} style={{ padding: '6px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <CornerUpLeft size={12} /> Devolver
                     </button>
                   </div>
                 </div>
@@ -296,7 +297,7 @@ export const ActiveOrders: React.FC = () => {
         {/* COLUMNA: EN PROCESO */}
         <div className={`card kanban-col ${activeColTab === 'EN_PROCESO' ? 'active' : ''}`} style={{ background: 'rgba(255,255,255,0.01)', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: '700' }}>⚡ En Proceso</h4>
+            <h4 style={{ fontSize: '14px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}><Zap size={14} /> En Proceso</h4>
             <span style={{ background: 'var(--primary-glow)', color: 'var(--primary)', padding: '2px 8px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700' }}>
               {getColOrders('EN_PROCESO').length}
             </span>
@@ -318,7 +319,7 @@ export const ActiveOrders: React.FC = () => {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                     <span className={`badge badge-${(o.pre_orden?.urgencia || 'Media').toLowerCase()}`}>{o.pre_orden?.urgencia || 'Media'}</span>
-                    {hasLocalDraft && <span className="badge badge-alta" style={{ fontSize: '9px' }}>📝 Borrador</span>}
+                    {hasLocalDraft && <span className="badge badge-alta" style={{ fontSize: '9px', display: 'flex', alignItems: 'center', gap: '2px' }}><FileEdit size={10} /> Borrador</span>}
                   </div>
 
                   <h5 style={{ fontSize: '14px', fontWeight: '700', marginBottom: '6px' }}>
@@ -329,11 +330,11 @@ export const ActiveOrders: React.FC = () => {
                   </p>
 
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <button className="btn btn-success" onClick={() => handleOpenCloseModal(o)} style={{ flex: 1, padding: '6px 10px', fontSize: '12px' }}>
-                      🏁 Cerrar
+                    <button className="btn btn-success" onClick={() => handleOpenCloseModal(o)} style={{ flex: 1, padding: '6px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <Flag size={12} /> Cerrar
                     </button>
-                    <button className="btn btn-secondary" onClick={() => handleRevert(o.id)} style={{ padding: '6px 10px', fontSize: '12px' }}>
-                      ↩️ Devolver
+                    <button className="btn btn-secondary" onClick={() => handleRevert(o.id)} style={{ padding: '6px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                      <CornerUpLeft size={12} /> Devolver
                     </button>
                   </div>
                 </div>
@@ -345,7 +346,7 @@ export const ActiveOrders: React.FC = () => {
         {/* COLUMNA: RESUELTA */}
         <div className={`card kanban-col ${activeColTab === 'RESUELTA' ? 'active' : ''}`} style={{ background: 'rgba(255,255,255,0.01)', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: '700' }}>✅ Resueltas</h4>
+            <h4 style={{ fontSize: '14px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}><CheckCircle size={14} /> Resueltas</h4>
             <span style={{ background: 'var(--success-glow)', color: 'var(--success)', padding: '2px 8px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700' }}>
               {getColOrders('RESUELTA').length}
             </span>
@@ -365,7 +366,7 @@ export const ActiveOrders: React.FC = () => {
         {/* COLUMNA: RECHAZADA */}
         <div className={`card kanban-col ${activeColTab === 'RECHAZADA' ? 'active' : ''}`} style={{ background: 'rgba(255,255,255,0.01)', padding: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '12px' }}>
-            <h4 style={{ fontSize: '14px', fontWeight: '700' }}>❌ Rechazadas</h4>
+            <h4 style={{ fontSize: '14px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}><XCircle size={14} /> Rechazadas</h4>
             <span style={{ background: 'rgba(239, 68, 68, 0.08)', color: 'var(--danger)', padding: '2px 8px', borderRadius: '9999px', fontSize: '11px', fontWeight: '700' }}>
               {getColOrders('RECHAZADA').length}
             </span>
@@ -392,7 +393,7 @@ export const ActiveOrders: React.FC = () => {
               <h3 style={{ fontSize: '16px', fontWeight: '700' }}>
                 Formulario de Cierre: {selectedOrden.dispositivo.codigo_activo}
               </h3>
-              <button className="btn btn-secondary" onClick={() => setSelectedOrden(null)} style={{ padding: '4px 8px' }}>❌ Cerrar</button>
+              <button className="btn btn-secondary" onClick={() => setSelectedOrden(null)} style={{ padding: '4px 8px', display: 'flex', alignItems: 'center', gap: '4px' }}><X size={12} /> Cerrar</button>
             </div>
 
             {stockConflict && (
@@ -407,7 +408,7 @@ export const ActiveOrders: React.FC = () => {
                 gap: '12px',
                 textAlign: 'left'
               }}>
-                <h4 style={{ fontSize: '14px', fontWeight: '700' }}>⚠️ Desabastecimiento en Almacén</h4>
+                <h4 style={{ fontSize: '14px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}><AlertTriangle size={14} /> Desabastecimiento en Almacén</h4>
                 <p style={{ fontSize: '13px' }}>
                   El material <strong>{stockConflict.details?.nombre_solicitado || 'solicitado'}</strong> no posee stock suficiente.
                 </p>
@@ -415,8 +416,8 @@ export const ActiveOrders: React.FC = () => {
                   <li>Stock Disponible: {stockConflict.details?.stock_disponible} uds</li>
                   <li>Solicitado para Cierre: {stockConflict.details?.cantidad_solicitada} uds</li>
                 </div>
-                <button className="btn btn-primary" onClick={handleSaveDraft} style={{ background: 'var(--warning)', color: '#000', fontWeight: '700' }}>
-                  📝 Guardar como Borrador Técnico
+                <button className="btn btn-primary" onClick={handleSaveDraft} style={{ background: 'var(--warning)', color: '#000', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Save size={14} /> Guardar como Borrador Técnico
                 </button>
               </div>
             )}
@@ -447,8 +448,8 @@ export const ActiveOrders: React.FC = () => {
               <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <h4 style={{ fontSize: '13px', fontWeight: '700' }}>Repuestos / Consumibles Utilizados</h4>
-                  <button className="btn btn-secondary" onClick={handleAddConsumible} style={{ padding: '4px 8px', fontSize: '12px' }}>
-                    ➕ Añadir Material
+                  <button className="btn btn-secondary" onClick={handleAddConsumible} style={{ padding: '4px 8px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Plus size={12} /> Añadir Material
                   </button>
                 </div>
 
@@ -470,7 +471,7 @@ export const ActiveOrders: React.FC = () => {
                               return c ? `${c.nombre} (Stock: ${c.stock})` : '-- Seleccionar Material --';
                             })()
                           : '-- Seleccionar Material --'}
-                        <span>🔍</span>
+                        <span><Search size={14} /></span>
                       </button>
                       
                       <input 
@@ -482,8 +483,8 @@ export const ActiveOrders: React.FC = () => {
                         min={1}
                       />
 
-                      <button className="btn btn-danger" onClick={() => handleRemoveConsumible(idx)} style={{ padding: '8px 12px' }}>
-                        🗑️
+                      <button className="btn btn-danger" onClick={() => handleRemoveConsumible(idx)} style={{ padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   ))}
@@ -491,8 +492,8 @@ export const ActiveOrders: React.FC = () => {
               </div>
 
               <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
-                <button className="btn btn-success" onClick={handleCloseOrderSubmit} style={{ flex: 1, padding: '12px' }}>
-                  🏁 Confirmar Cierre de Incidencia
+                <button className="btn btn-success" onClick={handleCloseOrderSubmit} style={{ flex: 1, padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                  <Check size={16} /> Confirmar Cierre de Incidencia
                 </button>
                 {hasDraft && (
                   <button className="btn btn-secondary" onClick={async () => {

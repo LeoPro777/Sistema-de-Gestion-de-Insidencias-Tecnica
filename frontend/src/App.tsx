@@ -4,18 +4,33 @@ import { NotificationModalProvider } from './context/NotificationModalContext';
 import { useWebSocket } from './hooks/useWebSocket';
 import { Login } from './components/Login';
 import { Dashboard } from './components/Dashboard';
-import { PreOrdenes } from './components/PreOrdenes';
-import { ActiveOrders } from './components/ActiveOrders';
-import { Almacen } from './components/Almacen';
-import { Traslados } from './components/Traslados';
+import { UsuariosModule } from './components/UsuariosModule';
+import { OrdenesModule } from './components/OrdenesModule';
+import { InventarioModule } from './components/InventarioModule';
 import { Configuracion } from './components/Configuracion';
 import { Areas } from './components/Areas';
 import { Reportes } from './components/Reportes';
 import { Auditoria } from './components/Auditoria';
-import { Aspirantes } from './components/Aspirantes';
-import { GestionUsuarios } from './components/GestionUsuarios';
 import { api } from './services/api';
 import { AlertaSistema } from './types';
+import { 
+  LayoutDashboard, 
+  Building2, 
+  Users, 
+  Kanban, 
+  Package, 
+  FileText, 
+  History, 
+  Settings, 
+  LogOut,
+  Hospital,
+  Bell,
+  Menu,
+  X,
+  Check,
+  Laptop,
+  Boxes
+} from 'lucide-react';
 
 // --- SUBFORMULARIO: REGISTRO INICIAL DE ASPIRANTE ---
 const AspiranteRegisterForm: React.FC = () => {
@@ -118,6 +133,7 @@ const MainApp: React.FC = () => {
   // Alertas / Notificaciones
   const [alerts, setAlerts] = useState<AlertaSistema[]>([]);
   const [isAlertsOpen, setIsAlertsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const fetchAlerts = async () => {
     if (!token || !user) return;
@@ -140,9 +156,9 @@ const MainApp: React.FC = () => {
     
     // Toast en consola o alertas nativas de prioridad
     if (msg.event === 'new_pre_orden') {
-      console.log(`🔔 WebSocket: Nueva incidencia [${msg.urgencia.toUpperCase()}] en ${msg.area}`);
+      console.log(`WebSocket: Nueva incidencia [${msg.urgencia.toUpperCase()}] en ${msg.area}`);
     } else if (msg.event === 'admin_alert') {
-      console.log(`⚠️ WebSocket: Alarma Admin: ${msg.mensaje}`);
+      console.log(`WebSocket: Alarma Admin: ${msg.mensaje}`);
     }
   });
 
@@ -228,27 +244,21 @@ const MainApp: React.FC = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return isAllowed(['Admin', 'Soporte Técnico']) ? <Dashboard /> : <ActiveOrders />;
+        return isAllowed(['Admin', 'Soporte Técnico']) ? <Dashboard /> : <OrdenesModule />;
       case 'areas':
         return isAllowed(['Admin']) ? <Areas /> : <div>Acceso denegado</div>;
-      case 'pre_ordenes':
-        return isAllowed(['Admin', 'Soporte Técnico']) ? <PreOrdenes /> : <div>Acceso denegado</div>;
-      case 'active_orders':
-        return <ActiveOrders />;
-      case 'almacen':
-        return <Almacen />;
-      case 'traslados':
-        return isAllowed(['Admin']) ? <Traslados /> : <div>Acceso denegado</div>;
+      case 'ordenes':
+        return <OrdenesModule />;
+      case 'inventario':
+        return <InventarioModule />;
       case 'reportes':
         return isAllowed(['Admin', 'Soporte Técnico']) ? <Reportes /> : <div>Acceso denegado</div>;
       case 'auditoria':
         return isAllowed(['Admin']) ? <Auditoria /> : <div>Acceso denegado</div>;
       case 'configuracion':
         return isAllowed(['Admin']) ? <Configuracion /> : <div>Acceso denegado</div>;
-      case 'aspirantes':
-        return isAllowed(['Admin']) ? <Aspirantes /> : <div>Acceso denegado</div>;
       case 'usuarios':
-        return isAllowed(['Admin']) ? <GestionUsuarios /> : <div>Acceso denegado</div>;
+        return isAllowed(['Admin']) ? <UsuariosModule /> : <div>Acceso denegado</div>;
       default:
         return <Dashboard />;
     }
@@ -258,6 +268,7 @@ const MainApp: React.FC = () => {
     setActiveTab(tab);
     setIsSidebarOpen(false); // Cerrar sidebar en dispositivos móviles
     setIsAlertsOpen(false);  // Cerrar panel de alertas al navegar
+    setIsSettingsOpen(false); // Cerrar panel de configuración al navegar
   };
 
   return (
@@ -271,8 +282,8 @@ const MainApp: React.FC = () => {
       <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '40px' }}>
           <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h1 style={{ fontSize: '18px', fontWeight: '800', color: '#fff', letterSpacing: '0.05em' }}>
-              🏥 MONOLITO INFRA
+            <h1 style={{ fontSize: '18px', fontWeight: '800', color: '#fff', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Hospital size={20} /> MONOLITO INFRA
             </h1>
             {/* Cerrar Sidebar en Móvil */}
             <button 
@@ -280,7 +291,7 @@ const MainApp: React.FC = () => {
               onClick={() => setIsSidebarOpen(false)}
               style={{ display: 'none' }} // Sobrescrito por media queries
             >
-              ✕
+              <X size={20} />
             </button>
           </div>
           <span style={{ fontSize: '11px', color: 'var(--text-secondary)', fontWeight: '600' }}>
@@ -296,11 +307,16 @@ const MainApp: React.FC = () => {
               style={{
                 width: '100%',
                 justifyContent: 'flex-start',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
                 background: activeTab === 'dashboard' ? 'var(--primary-glow)' : 'transparent',
-                borderColor: activeTab === 'dashboard' ? 'var(--primary)' : 'transparent'
+                borderColor: activeTab === 'dashboard' ? 'var(--primary)' : 'transparent',
+                color: activeTab === 'dashboard' ? '#fff' : 'var(--text-secondary)'
               }}
             >
-              📊 Indicadores MTTR
+              <LayoutDashboard size={18} color={activeTab === 'dashboard' ? 'var(--primary)' : 'var(--text-secondary)'} />
+              Dashboard
             </button>
           )}
 
@@ -312,23 +328,16 @@ const MainApp: React.FC = () => {
                 style={{
                   width: '100%',
                   justifyContent: 'flex-start',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
                   background: activeTab === 'areas' ? 'var(--primary-glow)' : 'transparent',
-                  borderColor: activeTab === 'areas' ? 'var(--primary)' : 'transparent'
+                  borderColor: activeTab === 'areas' ? 'var(--primary)' : 'transparent',
+                  color: activeTab === 'areas' ? '#fff' : 'var(--text-secondary)'
                 }}
               >
-                🏢 Áreas Hospitalarias
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => handleTabChange('aspirantes')}
-                style={{
-                  width: '100%',
-                  justifyContent: 'flex-start',
-                  background: activeTab === 'aspirantes' ? 'var(--primary-glow)' : 'transparent',
-                  borderColor: activeTab === 'aspirantes' ? 'var(--primary)' : 'transparent'
-                }}
-              >
-                👥 Evaluar Aspirantes
+                <Building2 size={18} color={activeTab === 'areas' ? 'var(--primary)' : 'var(--text-secondary)'} />
+                Áreas
               </button>
               <button
                 className="btn btn-secondary"
@@ -336,70 +345,55 @@ const MainApp: React.FC = () => {
                 style={{
                   width: '100%',
                   justifyContent: 'flex-start',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
                   background: activeTab === 'usuarios' ? 'var(--primary-glow)' : 'transparent',
-                  borderColor: activeTab === 'usuarios' ? 'var(--primary)' : 'transparent'
+                  borderColor: activeTab === 'usuarios' ? 'var(--primary)' : 'transparent',
+                  color: activeTab === 'usuarios' ? '#fff' : 'var(--text-secondary)'
                 }}
               >
-                👥 Gestión de Usuarios
+                <Users size={18} color={activeTab === 'usuarios' ? 'var(--primary)' : 'var(--text-secondary)'} />
+                Usuarios
               </button>
             </>
           )}
 
-          {isAllowed(['Admin', 'Soporte Técnico']) && (
-            <button
-              className="btn btn-secondary"
-              onClick={() => handleTabChange('pre_ordenes')}
-              style={{
-                width: '100%',
-                justifyContent: 'flex-start',
-                background: activeTab === 'pre_ordenes' ? 'var(--primary-glow)' : 'transparent',
-                borderColor: activeTab === 'pre_ordenes' ? 'var(--primary)' : 'transparent'
-              }}
-            >
-              📥 Ingesta Pre-Órdenes
-            </button>
-          )}
-
           <button
             className="btn btn-secondary"
-            onClick={() => handleTabChange('active_orders')}
+            onClick={() => handleTabChange('ordenes')}
             style={{
               width: '100%',
               justifyContent: 'flex-start',
-              background: activeTab === 'active_orders' ? 'var(--primary-glow)' : 'transparent',
-              borderColor: activeTab === 'active_orders' ? 'var(--primary)' : 'transparent'
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              background: activeTab === 'ordenes' ? 'var(--primary-glow)' : 'transparent',
+              borderColor: activeTab === 'ordenes' ? 'var(--primary)' : 'transparent',
+              color: activeTab === 'ordenes' ? '#fff' : 'var(--text-secondary)'
             }}
           >
-            📋 Tablero Kanban
+            <Kanban size={18} color={activeTab === 'ordenes' ? 'var(--primary)' : 'var(--text-secondary)'} />
+            Órdenes
           </button>
 
           <button
             className="btn btn-secondary"
-            onClick={() => handleTabChange('almacen')}
+            onClick={() => handleTabChange('inventario')}
             style={{
               width: '100%',
               justifyContent: 'flex-start',
-              background: activeTab === 'almacen' ? 'var(--primary-glow)' : 'transparent',
-              borderColor: activeTab === 'almacen' ? 'var(--primary)' : 'transparent'
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              background: activeTab === 'inventario' ? 'var(--primary-glow)' : 'transparent',
+              borderColor: activeTab === 'inventario' ? 'var(--primary)' : 'transparent',
+              color: activeTab === 'inventario' ? '#fff' : 'var(--text-secondary)'
             }}
           >
-            🛠️ Almacén / Inventario
+            <Package size={18} color={activeTab === 'inventario' ? 'var(--primary)' : 'var(--text-secondary)'} />
+            Inventario
           </button>
-
-          {isAllowed(['Admin']) && (
-            <button
-              className="btn btn-secondary"
-              onClick={() => handleTabChange('traslados')}
-              style={{
-                width: '100%',
-                justifyContent: 'flex-start',
-                background: activeTab === 'traslados' ? 'var(--primary-glow)' : 'transparent',
-                borderColor: activeTab === 'traslados' ? 'var(--primary)' : 'transparent'
-              }}
-            >
-              🔄 Traslados / Bajas
-            </button>
-          )}
 
           {isAllowed(['Admin', 'Soporte Técnico']) && (
             <button
@@ -408,11 +402,16 @@ const MainApp: React.FC = () => {
               style={{
                 width: '100%',
                 justifyContent: 'flex-start',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
                 background: activeTab === 'reportes' ? 'var(--primary-glow)' : 'transparent',
-                borderColor: activeTab === 'reportes' ? 'var(--primary)' : 'transparent'
+                borderColor: activeTab === 'reportes' ? 'var(--primary)' : 'transparent',
+                color: activeTab === 'reportes' ? '#fff' : 'var(--text-secondary)'
               }}
             >
-              📈 Reportes y Descargas
+              <FileText size={18} color={activeTab === 'reportes' ? 'var(--primary)' : 'var(--text-secondary)'} />
+              Reportes
             </button>
           )}
 
@@ -423,28 +422,20 @@ const MainApp: React.FC = () => {
               style={{
                 width: '100%',
                 justifyContent: 'flex-start',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
                 background: activeTab === 'auditoria' ? 'var(--primary-glow)' : 'transparent',
-                borderColor: activeTab === 'auditoria' ? 'var(--primary)' : 'transparent'
+                borderColor: activeTab === 'auditoria' ? 'var(--primary)' : 'transparent',
+                color: activeTab === 'auditoria' ? '#fff' : 'var(--text-secondary)'
               }}
             >
-              🔒 Bitácora Auditoría
+              <History size={18} color={activeTab === 'auditoria' ? 'var(--primary)' : 'var(--text-secondary)'} />
+              Auditoría
             </button>
           )}
 
-          {isAllowed(['Admin']) && (
-            <button
-              className="btn btn-secondary"
-              onClick={() => handleTabChange('configuracion')}
-              style={{
-                width: '100%',
-                justifyContent: 'flex-start',
-                background: activeTab === 'configuracion' ? 'var(--primary-glow)' : 'transparent',
-                borderColor: activeTab === 'configuracion' ? 'var(--primary)' : 'transparent'
-              }}
-            >
-              ⚙️ Variables Globales
-            </button>
-          )}
+
         </nav>
 
         {/* Footer Sidebar */}
@@ -469,8 +460,21 @@ const MainApp: React.FC = () => {
               </span>
             </div>
           </div>
-          <button className="btn btn-secondary" onClick={logout} style={{ width: '100%', borderColor: 'var(--danger)', color: 'hsl(346, 84%, 60%)' }}>
-            Cerrar Sesión
+          <button 
+            className="btn btn-secondary" 
+            onClick={logout} 
+            style={{ 
+              width: '100%', 
+              borderColor: 'var(--danger)', 
+              color: 'hsl(346, 84%, 60%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+          >
+            <LogOut size={16} />
+            Salir
           </button>
         </div>
       </aside>
@@ -485,7 +489,7 @@ const MainApp: React.FC = () => {
               onClick={() => setIsSidebarOpen(true)}
               style={{ display: 'flex' }}
             >
-              ☰
+              <Menu size={20} />
             </button>
             <div style={{ fontSize: '14px', fontWeight: '600', color: 'var(--text-secondary)' }}>
               Hospital General Informática
@@ -496,7 +500,10 @@ const MainApp: React.FC = () => {
             {/* Centro de Notificaciones Alertas (Módulo 9) */}
             <div style={{ position: 'relative' }}>
               <button 
-                onClick={() => setIsAlertsOpen(!isAlertsOpen)} 
+                onClick={() => {
+                  setIsAlertsOpen(!isAlertsOpen);
+                  setIsSettingsOpen(false);
+                }} 
                 className="btn btn-secondary"
                 style={{ 
                   padding: '8px 12px', 
@@ -506,7 +513,7 @@ const MainApp: React.FC = () => {
                 }}
                 title="Alertas del Sistema"
               >
-                🔔 
+                <Bell size={18} />
                 {alerts.length > 0 && (
                   <span style={{
                     position: 'absolute',
@@ -584,7 +591,7 @@ const MainApp: React.FC = () => {
                               className="btn btn-secondary"
                               style={{ padding: '3px 8px', fontSize: '10px', height: 'auto', background: 'rgba(22, 163, 74, 0.1)', color: '#10B981', borderColor: 'transparent' }}
                             >
-                              ✓ Archivar
+                              <Check size={12} style={{ marginRight: '4px' }} /> Archivar
                             </button>
                           </div>
                         </div>
@@ -594,6 +601,92 @@ const MainApp: React.FC = () => {
                 </div>
               )}
             </div>
+
+            {/* Menú Desplegable de Configuración */}
+            {isAllowed(['Admin']) && (
+              <div style={{ position: 'relative' }}>
+                <button 
+                  onClick={() => {
+                    setIsSettingsOpen(!isSettingsOpen);
+                    setIsAlertsOpen(false);
+                  }} 
+                  className="btn btn-secondary"
+                  style={{ 
+                    padding: '8px 12px', 
+                    position: 'relative',
+                    background: isSettingsOpen ? 'rgba(255,255,255,0.06)' : 'transparent',
+                    borderColor: isSettingsOpen ? 'var(--primary)' : 'var(--border-color)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                  title="Configuración"
+                >
+                  <Settings size={18} color={isSettingsOpen ? 'var(--primary)' : 'var(--text-secondary)'} />
+                </button>
+
+                {/* Dropdown de Configuración */}
+                {isSettingsOpen && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '120%',
+                    right: 0,
+                    width: '220px',
+                    background: 'var(--bg-sidebar)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: 'var(--radius-lg)',
+                    boxShadow: 'var(--shadow-lg)',
+                    zIndex: 300,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    overflow: 'hidden',
+                    padding: '8px'
+                  }}>
+                    <div style={{ 
+                      padding: '8px 12px 12px 12px', 
+                      borderBottom: '1px solid var(--border-color)', 
+                      fontWeight: '700', 
+                      fontSize: '12px', 
+                      color: 'var(--text-muted)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <span>Opciones</span>
+                      <button 
+                        onClick={() => setIsSettingsOpen(false)} 
+                        style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '11px', fontFamily: 'inherit' }}
+                      >
+                        Cerrar
+                      </button>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '6px' }}>
+                      <button
+                        onClick={() => handleTabChange('configuracion')}
+                        className="btn btn-secondary"
+                        style={{
+                          width: '100%',
+                          justifyContent: 'flex-start',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          background: activeTab === 'configuracion' ? 'var(--primary-glow)' : 'transparent',
+                          borderColor: activeTab === 'configuracion' ? 'var(--primary)' : 'transparent',
+                          color: activeTab === 'configuracion' ? '#fff' : 'var(--text-secondary)',
+                          padding: '10px 12px',
+                          fontSize: '13px'
+                        }}
+                      >
+                        <Settings size={16} color={activeTab === 'configuracion' ? 'var(--primary)' : 'var(--text-secondary)'} />
+                        Configuración
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div style={{ fontSize: '13px', color: 'var(--text-muted)', display: 'none' }} className="header-date">
               {new Date().toLocaleDateString('es-ES', { weekday: 'short', month: 'short', day: 'numeric' })}

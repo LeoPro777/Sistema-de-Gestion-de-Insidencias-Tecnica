@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 import asyncio
+import os
 from datetime import datetime
 from typing import List, Optional
 
@@ -9,9 +11,10 @@ from app.core.database import get_db
 from app.models.auth import Usuario
 from app.models.devices import AreaHospital, Dispositivo, Traslado
 from app.models.inventory import ConfiguracionSistema, ColaCorreosOutbox
+from app.models.incidents import Orden
 from app.schemas.devices import (
     AreaHospitalResponse, AreaHospitalCreate,
-    DispositivoResponse, DispositivoCreate,
+    DispositivoResponse, DispositivoCreate, DispositivoUpdate,
     TrasladoCreate, TrasladoResponse
 )
 from app.routers.auth import get_current_user, require_roles
@@ -142,6 +145,55 @@ async def create_device(
     await db.commit()
     await db.refresh(device)
     return device
+
+
+@router.get("/stats")
+async def get_devices_stats(
+    current_user: Usuario = Depends(require_roles(["Admin", "Soporte Técnico", "Técnico Hardware", "Técnico Software"])),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Calcula los totalizadores de dispositivos: totales, activos, averiados y en línea.
+    """
+    from sqlalchemy import func
+    
+    # Totales
+    total_q = select(func.count(Dispositivo.id))
+    res_tot = await db.execute(total_q)
+    total_devices = res_tot.scalar() or 0
+
+    # Activos
+    activos_q = select(func.count(Dispositivo.id)).where(Dispositivo.estado_patrimonial == "Activo")
+    res_act = await db.execute(activos_q)
+    activos_devices = res_act.scalar() or 0
+
+    # Averiados
+    averiados_q = select(func.count(Dispositivo.id)).where(Dispositivo.estado_patrimonial == "Averiado")
+    res_ave = await db.execute(averiados_q)
+    averiados_devices = res_ave.scalar() or 0
+
+    # En Línea (Ping en paralelo para activos con IP)
+    query_ips = select(Dispositivo).where(
+        Dispositivo.estado_patrimonial == "Activo",
+        Dispositivo.ip_fija != None,
+        Dispositivo.ip_fija != ""
+    )
+    res_ips = await db.execute(query_ips)
+    devices_with_ip = res_ips.scalars().all()
+
+    en_linea_count = 0
+    if devices_with_ip:
+        tasks = [ping_ip(d.ip_fija) for d in devices_with_ip]
+        ping_results = await asyncio.gather(*tasks)
+        en_linea_count = sum(1 for r in ping_results if r)
+
+    return {
+        "totales": total_devices,
+        "activos": activos_devices,
+        "averiados": averiados_devices,
+        "en_linea": en_linea_count
+    }
+
 
 @router.get("/{id}", response_model=DispositivoResponse)
 async def get_device_by_id(
@@ -379,3 +431,83 @@ async def get_device_relocation_history(
         t.ejecutor = r_ej.scalars().first()
 
     return traslados
+
+
+@router.put("/{id}", response_model=DispositivoResponse)
+async def update_device(
+    id: int,
+    payload: DispositivoUpdate,
+    current_user: Usuario = Depends(require_roles(["Admin", "Soporte Técnico"])),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Edita la IP y la descripción de un activo tecnológico.
+    """
+    query = select(Dispositivo).where(Dispositivo.id == id)
+    res = await db.execute(query)
+    device = res.scalars().first()
+
+    if not device:
+        raise HTTPException(status_code=404, detail="Dispositivo no encontrado.")
+
+    # Guardar cambios
+    device.ip_fija = payload.ip_fija
+    device.descripcion = payload.descripcion
+    await db.commit()
+    await db.refresh(device)
+
+    # Cargar área asociada
+    query_area = select(AreaHospital).where(AreaHospital.id == device.area_id)
+    res_area = await db.execute(query_area)
+    device.area = res_area.scalars().first()
+
+    return device
+
+
+@router.get("/{id}/incidents", response_model=List[dict])
+async def get_device_incidents(
+    id: int,
+    current_user: Usuario = Depends(require_roles(["Admin", "Soporte Técnico", "Técnico Hardware", "Técnico Software"])),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Obtiene el historial clínico de incidencias y órdenes de servicio asociadas al dispositivo.
+    """
+    # Verificar que el dispositivo exista
+    dev_query = select(Dispositivo).where(Dispositivo.id == id)
+    dev_res = await db.execute(dev_query)
+    device = dev_res.scalars().first()
+
+    if not device:
+        raise HTTPException(status_code=404, detail="Dispositivo no encontrado.")
+
+    # Consultar las órdenes de servicio asociadas
+    query = (
+        select(Orden)
+        .options(
+            selectinload(Orden.pre_orden),
+            selectinload(Orden.tecnico),
+            selectinload(Orden.soporte)
+        )
+        .where(Orden.device_id == id)
+        .order_by(Orden.created_at.desc())
+    )
+    res = await db.execute(query)
+    ordenes = res.scalars().all()
+
+    # Mapear respuesta
+    result = []
+    for o in ordenes:
+        result.append({
+            "id": o.id,
+            "estado": o.estado,
+            "created_at": o.created_at,
+            "closed_at": o.closed_at,
+            "diagnostico": o.diagnostico or "Sin diagnóstico aún",
+            "urgencia": o.pre_orden.urgencia if o.pre_orden else "Media",
+            "tipo_requerimiento": o.pre_orden.tipo_requerimiento if o.pre_orden else "Falla Hardware/Software",
+            "resumen": o.pre_orden.resumen if o.pre_orden else "Sin resumen",
+            "tecnico": f"{o.tecnico.nombre} {o.tecnico.apellido}" if o.tecnico else "No Asignado",
+            "soporte": f"{o.soporte.nombre} {o.soporte.apellido}" if o.soporte else "Sistema"
+        })
+    return result

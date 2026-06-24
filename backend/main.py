@@ -47,9 +47,13 @@ app = FastAPI(
 )
 
 # Configuración de CORS para canalizar peticiones del cliente React
+# Si permitimos credenciales y "*" al mismo tiempo, Starlette puede arrojar error 400 en preflight
+allow_all = settings.BACKEND_CORS_ORIGINS == ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=settings.BACKEND_CORS_ORIGINS if not allow_all else [],
+    allow_origin_regex=".*" if allow_all else None,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

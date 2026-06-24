@@ -3,6 +3,7 @@ import { api, ApiError } from '../services/api';
 import { InventarioItem, PrestamoHerramienta } from '../types';
 import { useNotificationModal } from '../context/NotificationModalContext';
 import { SearchSelectModal } from './SearchSelectModal';
+import { Lock, Search, Plus, RefreshCw, AlertTriangle, HelpCircle } from 'lucide-react';
 
 export const Almacen: React.FC = () => {
   const { showAlert, showConfirm } = useNotificationModal();
@@ -238,7 +239,7 @@ export const Almacen: React.FC = () => {
                         return h ? `${h.nombre} (Disponibles: {h.stock} uds)` : '-- Seleccione Herramienta --';
                       })()
                     : '-- Seleccione Herramienta --'}
-                  <span>🔍</span>
+                  <span><Search size={14} /></span>
                 </button>
               </div>
 
@@ -254,8 +255,8 @@ export const Almacen: React.FC = () => {
                 />
               </div>
 
-              <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
-                🔐 Firmar y Entregar Herramienta
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <Lock size={16} /> Firmar y Entregar Herramienta
               </button>
             </form>
           </div>
@@ -304,8 +305,8 @@ export const Almacen: React.FC = () => {
                 </div>
               </div>
 
-              <button type="submit" className="btn btn-secondary" style={{ width: '100%' }}>
-                ➕ Agregar al Catálogo
+              <button type="submit" className="btn btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <Plus size={16} /> Agregar al Catálogo
               </button>
             </form>
           </div>
@@ -361,14 +362,14 @@ export const Almacen: React.FC = () => {
                     <td data-label="Acciones">
                       {loan.estado === 'Activo' || loan.estado === 'Retrasado' ? (
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          <button className="btn btn-success" onClick={() => handleReturnTool(loan.id)} style={{ padding: '6px 10px', fontSize: '12px' }}>
-                            🔄 Retornar
+                          <button className="btn btn-success" onClick={() => handleReturnTool(loan.id)} style={{ padding: '6px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <RefreshCw size={12} /> Retornar
                           </button>
-                          <button className="btn btn-secondary" onClick={() => handleReportIncident(loan.id, 'Dañado')} style={{ padding: '6px 10px', fontSize: '12px' }}>
-                            💥 Dañado
+                          <button className="btn btn-secondary" onClick={() => handleReportIncident(loan.id, 'Dañado')} style={{ padding: '6px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <AlertTriangle size={12} /> Dañado
                           </button>
-                          <button className="btn btn-secondary" onClick={() => handleReportIncident(loan.id, 'Perdido')} style={{ padding: '6px 10px', fontSize: '12px' }}>
-                            ❓ Perdido
+                          <button className="btn btn-secondary" onClick={() => handleReportIncident(loan.id, 'Perdido')} style={{ padding: '6px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <HelpCircle size={12} /> Perdido
                           </button>
                         </div>
                       ) : (

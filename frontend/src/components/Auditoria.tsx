@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { AuditoriaLog } from '../types';
+import { Search, User, Calendar } from 'lucide-react';
 
 export const Auditoria: React.FC = () => {
   const [logs, setLogs] = useState<AuditoriaLog[]>([]);
@@ -123,8 +124,8 @@ export const Auditoria: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button type="submit" className="btn btn-primary" disabled={filtering}>
-              {filtering ? 'Filtrando...' : '🔍 Filtrar'}
+            <button type="submit" className="btn btn-primary" disabled={filtering} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+              {filtering ? 'Filtrando...' : <><Search size={16} /> Filtrar</>}
             </button>
             <button type="button" className="btn btn-secondary" onClick={handleClearFilters}>
               Restablecer
@@ -177,12 +178,12 @@ export const Auditoria: React.FC = () => {
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                    <div>
-                      👤 {log.rol_ejecutor} 
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <User size={14} /> {log.rol_ejecutor} 
                       <span style={{ color: 'var(--text-muted)' }}> (User ID: {log.usuario_id || 'Sistema'})</span>
                     </div>
-                    <div>
-                      📅 {new Date(log.timestamp).toLocaleString()}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Calendar size={14} /> {new Date(log.timestamp).toLocaleString()}
                     </div>
                     <div style={{ fontSize: '16px' }}>
                       {isExpanded ? '▲' : '▼'}

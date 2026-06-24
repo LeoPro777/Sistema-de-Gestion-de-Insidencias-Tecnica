@@ -32,6 +32,10 @@ class DispositivoBase(BaseModel):
 class DispositivoCreate(DispositivoBase):
     pass
 
+class DispositivoUpdate(BaseModel):
+    ip_fija: Optional[str] = Field(None, pattern=r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$")
+    descripcion: Optional[str] = None
+
 class DispositivoResponse(DispositivoBase):
     id: int
     created_at: datetime

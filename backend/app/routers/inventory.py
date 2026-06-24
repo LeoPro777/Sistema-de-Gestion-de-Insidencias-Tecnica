@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select, update
+from sqlalchemy import select, update, text
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from datetime import datetime, timedelta
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 from app.core.database import get_db
 from app.models.auth import Usuario, Empleado
@@ -80,6 +81,74 @@ async def update_inventory_item(
     return item
 
 
+@router.get("/stats")
+async def get_inventory_stats(
+    current_user: Usuario = Depends(require_roles(["Admin", "Soporte Técnico", "Técnico Hardware", "Técnico Software"])),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Obtiene las estadísticas clave del inventario técnico: producto más usado y con más bajo stock.
+    """
+    from sqlalchemy import func
+    
+    # 1. Producto con más bajo stock
+    query_low = select(InventarioItem).order_by(InventarioItem.stock.asc())
+    res_low = await db.execute(query_low)
+    low_stock_item = res_low.scalars().first()
+
+    # 2. Consumible más usado en órdenes resueltas
+    query_most_used = text("""
+        SELECT idep.id, idep.nombre, SUM(oc.cantidad) as total_usado
+        FROM orden_consumibles oc
+        JOIN ordenes o ON oc.orden_id = o.id
+        JOIN inventario_departamento idep ON oc.consumible_id = idep.id
+        WHERE o.estado = 'RESUELTA'
+        GROUP BY idep.id, idep.nombre
+        ORDER BY total_usado DESC
+        LIMIT 1
+    """)
+    res_used = await db.execute(query_most_used)
+    used_row = res_used.fetchone()
+
+    most_used_product = None
+    if used_row:
+        most_used_product = {
+            "id": used_row[0],
+            "nombre": used_row[1],
+            "total_usado": int(used_row[2])
+        }
+    else:
+        # Si no hay consumibles usados en órdenes cerradas, buscar la herramienta más prestada
+        query_most_loaned = text("""
+            SELECT idep.id, idep.nombre, COUNT(ph.id) as total_prestamos
+            FROM prestamos_herramientas ph
+            JOIN inventario_departamento idep ON ph.herramienta_id = idep.id
+            GROUP BY idep.id, idep.nombre
+            ORDER BY total_prestamos DESC
+            LIMIT 1
+        """)
+        res_loaned = await db.execute(query_most_loaned)
+        loaned_row = res_loaned.fetchone()
+        if loaned_row:
+            most_used_product = {
+                "id": loaned_row[0],
+                "nombre": loaned_row[1],
+                "total_usado": int(loaned_row[2]),
+                "es_herramienta": True
+            }
+
+    return {
+        "bajo_stock": {
+            "id": low_stock_item.id,
+            "nombre": low_stock_item.nombre,
+            "stock": low_stock_item.stock,
+            "stock_minimo": low_stock_item.stock_minimo,
+            "tipo": low_stock_item.tipo
+        } if low_stock_item else None,
+        "mas_usado": most_used_product
+    }
+
+
 # --- ENDPOINTS DE PRÉSTAMOS ---
 
 @router.get("/prestamos", response_model=List[PrestamoHerramientaResponse])
@@ -90,7 +159,7 @@ async def get_active_loans(
     """
     Lista todos los préstamos registrados en el taller.
     """
-    query = select(PrestamoHerramienta).order_by(PrestamoHerramienta.fecha_prestamo.desc())
+    query = select(PrestamoHerramienta).options(selectinload(PrestamoHerramienta.herramienta)).order_by(PrestamoHerramienta.fecha_prestamo.desc())
     res = await db.execute(query)
     loans = res.scalars().all()
 

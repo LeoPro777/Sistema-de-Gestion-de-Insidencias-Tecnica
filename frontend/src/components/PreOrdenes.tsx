@@ -3,6 +3,7 @@ import { api, ApiError } from '../services/api';
 import { PreOrden, Dispositivo, Usuario, AreaHospital } from '../types';
 import { useNotificationModal } from '../context/NotificationModalContext';
 import { SearchSelectModal } from './SearchSelectModal';
+import { Trash2, Mic, Save, Zap, Search, Circle } from 'lucide-react';
 
 export const PreOrdenes: React.FC = () => {
   const { showAlert, showConfirm } = useNotificationModal();
@@ -71,7 +72,7 @@ export const PreOrdenes: React.FC = () => {
     setAudioUrl(null);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/v1/incidencias/pre/${poId}/audio`, {
+      const response = await fetch(`http://${window.location.hostname}:8000/api/v1/incidencias/pre/${poId}/audio`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -234,8 +235,8 @@ export const PreOrdenes: React.FC = () => {
               <h3 style={{ fontSize: '16px', fontWeight: '600' }}>
                 Detalles del Reporte: {selectedPO.numero_reporte.slice(0, 8)}...
               </h3>
-              <button className="btn btn-danger" onClick={handleReject} style={{ padding: '6px 12px', fontSize: '12px' }}>
-                🗑️ Spam / Rechazar
+              <button className="btn btn-danger" onClick={handleReject} style={{ padding: '6px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Trash2 size={14} /> Spam / Rechazar
               </button>
             </div>
 
@@ -248,7 +249,7 @@ export const PreOrdenes: React.FC = () => {
             {/* Audio nativo */}
             {audioUrl ? (
               <div style={{ background: 'rgba(255,255,255,0.02)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px dashed var(--border-color)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span className="form-label">🎙️ Nota de voz del empleado</span>
+                <span className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Mic size={14} /> Nota de voz del empleado</span>
                 <audio src={audioUrl} controls style={{ width: '100%' }} />
               </div>
             ) : selectedPO.audio_path ? (
@@ -270,10 +271,10 @@ export const PreOrdenes: React.FC = () => {
               <div className="form-group">
                 <label className="form-label">Urgencia Hospitalaria</label>
                 <select className="form-select" value={urgencia} onChange={(e) => setUrgencia(e.target.value)}>
-                  <option value="Crítica">🔴 Crítica (Emergencia/UCI)</option>
-                  <option value="Alta">🟠 Alta</option>
-                  <option value="Media">🔵 Media</option>
-                  <option value="Baja">⚪ Baja</option>
+                  <option value="Crítica">Crítica (Emergencia/UCI)</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Media">Media</option>
+                  <option value="Baja">Baja</option>
                 </select>
               </div>
             </div>
@@ -298,8 +299,8 @@ export const PreOrdenes: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button className="btn btn-secondary" onClick={handleSavePO} style={{ flex: 1 }}>
-                💾 Guardar Cambios
+              <button className="btn btn-secondary" onClick={handleSavePO} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <Save size={16} /> Guardar Cambios
               </button>
             </div>
 
@@ -321,7 +322,7 @@ export const PreOrdenes: React.FC = () => {
                           return d ? `[${d.codigo_activo}] ${d.marca} (${d.serial})` : '-- Seleccione Activo --';
                         })()
                       : '-- Seleccione Activo --'}
-                    <span>🔍</span>
+                    <span><Search size={14} /></span>
                   </button>
                 </div>
 
@@ -339,13 +340,13 @@ export const PreOrdenes: React.FC = () => {
                           return t ? `${t.nombre} ${t.apellido} - ${t.rol}` : '-- Seleccione Técnico --';
                         })()
                       : '-- Seleccione Técnico --'}
-                    <span>🔍</span>
+                    <span><Search size={14} /></span>
                   </button>
                 </div>
               </div>
 
-              <button className="btn btn-primary" onClick={handlePromote} style={{ width: '100%', padding: '12px' }}>
-                ⚡ Promover y Asignar Orden de Trabajo
+              <button className="btn btn-primary" onClick={handlePromote} style={{ width: '100%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <Zap size={16} /> Promover y Asignar Orden de Trabajo
               </button>
             </div>
           </div>

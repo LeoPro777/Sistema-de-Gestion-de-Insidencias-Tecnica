@@ -3,6 +3,7 @@ import { api, ApiError } from '../services/api';
 import { Usuario, Rol, EstadoUsuario } from '../types';
 import { useNotificationModal } from '../context/NotificationModalContext';
 import { SearchSelectModal } from './SearchSelectModal';
+import { Users, AlertTriangle, Zap } from 'lucide-react';
 
 export const GestionUsuarios: React.FC = () => {
   const { showAlert, showConfirm } = useNotificationModal();
@@ -127,7 +128,9 @@ export const GestionUsuarios: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', padding: '12px' }}>
       <div>
-        <h2 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>👤 Gestión de Usuarios</h2>
+        <h2 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Users size={24} /> Gestión de Usuarios
+        </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
           Administra el personal activo del taller hospitalario, reasigna roles, y suspende o reactiva cuentas de usuario.
         </p>
@@ -270,18 +273,18 @@ export const GestionUsuarios: React.FC = () => {
                             className="btn btn-danger"
                             onClick={() => handleSuspend(user.id)}
                             disabled={isSubmitting}
-                            style={{ padding: '6px 12px', fontSize: '12px' }}
+                            style={{ padding: '6px 12px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
                           >
-                            ⚠️ Suspender
+                            <AlertTriangle size={12} /> Suspender
                           </button>
                         ) : (
                           <button
                             className="btn btn-secondary"
                             onClick={() => handleReactivateClick(user)}
                             disabled={isSubmitting}
-                            style={{ padding: '6px 12px', fontSize: '12px', background: '#16A34A', color: '#fff', borderColor: 'transparent' }}
+                            style={{ padding: '6px 12px', fontSize: '12px', background: '#16A34A', color: '#fff', borderColor: 'transparent', display: 'flex', alignItems: 'center', gap: '4px' }}
                           >
-                            ⚡ Reactivar / Aprobar
+                            <Zap size={12} /> Reactivar / Aprobar
                           </button>
                         )}
                       </div>

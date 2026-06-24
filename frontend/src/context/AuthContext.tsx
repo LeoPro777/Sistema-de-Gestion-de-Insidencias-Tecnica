@@ -130,7 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const connectWS = () => {
       // Conectar al endpoint ws/status pasando el token
-      const wsUrl = `ws://localhost:8000/api/v1/auth/ws/status?token=${token}`;
+      const wsUrl = `ws://${window.location.hostname}:8000/api/v1/auth/ws/status?token=${token}`;
       ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {

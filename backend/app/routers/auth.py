@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException, status, WebSocket, WebSocketDisconnect, Request
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,11 +18,18 @@ router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login-bypass", auto_error=False)
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)) -> Usuario:
+async def get_current_user(
+    request: Request,
+    token: str = Depends(oauth2_scheme),
+    db: AsyncSession = Depends(get_db)
+) -> Usuario:
     """
     Dependencia global para autenticar peticiones HTTP y convalidar la sesión híbrida.
     Si la sesión fue revocada, levanta una excepción 401 estructurada.
     """
+    if not token:
+        token = request.query_params.get("token")
+        
     if not token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 

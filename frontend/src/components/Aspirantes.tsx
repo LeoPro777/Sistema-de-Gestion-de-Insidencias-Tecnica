@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api, ApiError } from '../services/api';
 import { Usuario, Rol } from '../types';
 import { useNotificationModal } from '../context/NotificationModalContext';
+import { UserPlus, Scale, Check, X } from 'lucide-react';
 
 export const Aspirantes: React.FC = () => {
   const { showAlert, showConfirm } = useNotificationModal();
@@ -95,7 +96,9 @@ export const Aspirantes: React.FC = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', padding: '12px' }}>
       <div>
-        <h2 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '8px' }}>👤 Solicitudes de Aspirantes</h2>
+        <h2 style={{ fontSize: '22px', fontWeight: '700', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <UserPlus size={24} /> Solicitudes de Aspirantes
+        </h2>
         <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
           Evalúa las solicitudes de registro del personal técnico y asígnales sus roles operacionales correspondientes.
         </p>
@@ -141,10 +144,10 @@ export const Aspirantes: React.FC = () => {
                   <td style={{ padding: '16px', textAlign: 'right' }}>
                     <button
                       className="btn btn-primary"
-                      style={{ padding: '6px 16px', fontSize: '13px' }}
+                      style={{ padding: '6px 16px', fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                       onClick={() => handleOpenEvaluate(user)}
                     >
-                      ⚖️ Evaluar
+                      <Scale size={14} /> Evaluar
                     </button>
                   </td>
                 </tr>
@@ -184,10 +187,10 @@ export const Aspirantes: React.FC = () => {
               <h3 style={{ fontSize: '18px', fontWeight: '700' }}>Evaluar Registro de Postulante</h3>
               <button 
                 onClick={handleCloseEvaluate}
-                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '16px' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center' }}
                 disabled={submitting}
               >
-                ✕
+                <X size={18} />
               </button>
             </div>
 
@@ -231,19 +234,19 @@ export const Aspirantes: React.FC = () => {
             <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
               <button 
                 className="btn btn-primary" 
-                style={{ flex: 1, padding: '10px', background: '#16A34A', borderColor: '#16A34A' }}
+                style={{ flex: 1, padding: '10px', background: '#16A34A', borderColor: '#16A34A', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                 onClick={handleApprove}
                 disabled={submitting}
               >
-                {submitting ? 'Aprobando...' : '✓ Aprobar Postulante'}
+                {submitting ? 'Aprobando...' : <><Check size={16} /> Aprobar Postulante</>}
               </button>
               <button 
                 className="btn btn-danger" 
-                style={{ flex: 1, padding: '10px' }}
+                style={{ flex: 1, padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                 onClick={handleReject}
                 disabled={submitting}
               >
-                {submitting ? 'Rechazando...' : '✕ Rechazar'}
+                {submitting ? 'Rechazando...' : <><X size={16} /> Rechazar</>}
               </button>
             </div>
           </div>
